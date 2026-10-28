@@ -3,9 +3,6 @@
 class Vaultgenome < Formula
   desc "Attested key release for fine-tuned models: the acpctl and acp-keygen tools"
   homepage "https://github.com/vault-genome/vaultgenome-core"
-  # Named here because the binaries' URLs end in the platform, from which
-  # Homebrew would read a number (arm64 → 64), not the release.
-  version "0.12.0"
   license "AGPL-3.0-or-later"
 
   on_macos do
