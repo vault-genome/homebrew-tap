@@ -1,0 +1,37 @@
+# The formula, installed from this checkout on an Apple-silicon Mac and on
+# x86-64 Linux: `brew install`, `brew test` (acpctl prints the release's
+# version) and `brew audit --strict`.
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  formula:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: tap this checkout, install, test, audit
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        run: |
+          set -euo pipefail
+          if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; fi
+          brew tap vault-genome/tap "$GITHUB_WORKSPACE"
+          brew install vault-genome/tap/vaultgenome
+          brew test vault-genome/tap/vaultgenome
+          brew audit --strict --online vault-genome/tap/vaultgenome
+          acpctl version
